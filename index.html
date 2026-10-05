@@ -1,27 +1,44 @@
+<!--
+NARRATIVE & STRUCTURE PLAN:
+1. Executive Header & KPI Dashboard: Highlights core stats, building permit details (115建字第0002號), project scale (1029.11坪), and key real estate metrics.
+2. Technical Building Permit & Legal Area Allocation Breakdown: Synthesizes exact area metrics from the 115建字第0002號 official contract (13,843.95m² private exclusive vs 12,449.35m² common areas split into 大公, 小公, 車公), escrow trust provider (國泰世華銀行), structural warranty (15 years), and 786.41m² public pedestrian setback.
+3. Architectural & Terrace Matrix (MVRDV Cantilever): Visualizes the unique 6m cantilevered loggia/balcony system and provides an interactive filterable matrix of all "約定專用露台" (2F, 4F, 11F, 13F, 19F, 20F, 22F, 23F, 24F, 25F).
+4. Space Innovation & Amenity Operations: Explains the indoor Utility Room replacing standard service balconies and the 20-year leased public amenity structure maintaining a low 36.8% common ratio.
+5. Dynamic Floor Unit & Price/Management Fee Estimator: Interactive tool allowing users to select unit types (48-54坪, 65-71坪, 73-78坪, 109-112坪 duplex), adjust parking spaces, and estimate total prices alongside monthly management fees ($250/坪 + $1,200/car).
+6. Market Analytics & Elevation Premium: Interactive Chart.js visualizers for absorption speed vs cumulative sales rate, floor elevation price curve, and legal area distribution, alongside a complete transactional data table.
+
+VISUALIZATION SELECTION & JUSTIFICATION:
+- Area Allocation (專有 vs 大公 vs 小公 vs 車公): Goal = Composition Breakdown -> Chosen Visualization = Chart.js Donut Chart -> Justification: Clearly displays proportional area allocations without SVG.
+- Absorption & Sales Speed: Goal = Compare Categories & Progress -> Chosen Visualization = Chart.js Combo Bar/Line Chart -> Justification: Simultaneously tracks monthly absorption rate (bars) and percentage achieved (line).
+- Elevation Price Gradient: Goal = Change / Trend over Floors -> Chosen Visualization = Chart.js Smooth Line Chart -> Justification: Directly depicts price escalation from 2F base (127.09萬/坪) to 24F peak (166.09萬/坪).
+- Exclusive Terrace Matrix: Goal = Organize & Search -> Chosen Visualization = Interactive HTML/Tailwind Grid & Dynamic Inspector -> Justification: Offers structured navigation without SVG or Mermaid JS.
+
+CONFIRMATION:
+NEITHER Mermaid JS NOR SVG were used anywhere in this output. All graphics are rendered via Chart.js HTML5 Canvas or styled HTML/CSS elements.
+-->
 <!DOCTYPE html>
 <html lang="zh-TW" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文心天母（Out of the Box）高端住宅開發與市場價值深度分析報告</title>
-    <!-- Tailwind CSS -->
+    <title>文心天母 OUT OF THE BOX｜建照核准數據與市場價值深度分析報告</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        stonebg: '#F9F8F6',
+                        slatebg: '#F8FAFC',
                         cardbg: '#FFFFFF',
-                        warmborder: '#E8E4DD',
-                        primarydark: '#22201D',
-                        secondarydark: '#4A4640',
-                        accentgold: '#A38A5C',
-                        accenthover: '#8C7348',
-                        mutedgray: '#8C8881',
-                        accentbg: '#F2EFE9'
+                        warmborder: '#E2E8F0',
+                        primarydark: '#0F172A',
+                        secondarydark: '#334155',
+                        accentgold: '#D97706',
+                        accentgolddark: '#B45309',
+                        accentblue: '#0284C7',
+                        mutedgray: '#64748B',
+                        accentbg: '#FEF3C7'
                     },
                     fontFamily: {
                         serif: ['Georgia', 'Cambria', 'Noto Serif TC', 'serif'],
@@ -33,14 +50,14 @@
     </script>
     <style>
         body {
-            background-color: #F9F8F6;
-            color: #22201D;
+            background-color: #F8FAFC;
+            color: #0F172A;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 680px;
+            max-width: 640px;
             margin-left: auto;
             margin-right: auto;
             height: 320px;
@@ -52,208 +69,261 @@
             }
         }
         .tab-btn.active {
-            border-bottom: 2px solid #A38A5C;
-            color: #A38A5C;
-            font-weight: 600;
+            border-bottom: 2px solid #D97706;
+            color: #D97706;
+            font-weight: 700;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #F2EFE9;
+            background: #F1F5F9;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #C5BCB0;
+            background: #CBD5E1;
             border-radius: 3px;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-<!-- Chosen Palette: Quiet Luxury Warm Neutrals (Background: #F9F8F6, Cards: #FFFFFF, Accent: #A38A5C, Text: #22201D, Borders: #E8E4DD) -->
-<!-- Application Structure Plan: Designed as an interactive executive SPA dashboard with logical sub-navigation (Executive Overview, Architectural Cantilever Design, Facilities & Interior, Interactive Product Matrix & Pricing, Market Analytics & Valuation). Users can explore quantitative metrics, price calculators, and visual analysis side-by-side without leaving the single-page layout. Rationale: Facilitates swift comprehension for developers, investors, and high-net-worth buyers by transforming a complex 30+ page appraisal into dynamic, interactive components. -->
-<!-- Visualization & Content Choices: 1. Metric Cards for high-level KPIs; 2. Grouped Bar Chart (Chart.js Canvas) for Absorption & Average Pricing per product segment; 3. Elevation Scatter/Line Chart (Chart.js Canvas) for Floor View Premium; 4. Interactive Apartment Yield & Cost Calculator (Vanilla JS) for dynamic client scenario simulation; 5. Visual Feature Explorer with dynamic tab panels for Quiet Luxury interior specifications and MVRDV architectural innovations. Confirmation: NO SVG tags or Mermaid JS used. -->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
-<!-- Header & Global Navigation -->
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-warmborder">
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-warmborder shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <div class="flex items-center gap-3">
                 <span class="text-2xl font-serif text-accentgold">❖</span>
                 <div>
                     <h1 class="text-xl font-serif font-bold text-primarydark tracking-wide">文心天母 OUT OF THE BOX</h1>
-                    <p class="text-xs text-mutedgray uppercase tracking-widest">Masterpiece Analysis & Value Report</p>
+                    <p class="text-xs text-mutedgray uppercase tracking-widest">Official Permit & Market Value Analysis</p>
                 </div>
             </div>
-            <nav class="hidden md:flex space-x-6 text-sm font-medium text-secondarydark">
-                <a href="#overview" class="hover:text-accentgold transition-colors">執行摘要</a>
-                <a href="#architecture" class="hover:text-accentgold transition-colors">建築與懸臂工程</a>
-                <a href="#interiors" class="hover:text-accentgold transition-colors">公設與靜謐美學</a>
-                <a href="#matrix" class="hover:text-accentgold transition-colors">戶型與試算</a>
-                <a href="#market" class="hover:text-accentgold transition-colors">實價行情分析</a>
+            <nav class="hidden lg:flex space-x-6 text-sm font-medium text-secondarydark">
+                <a href="#overview" class="hover:text-accentgold transition-colors">建照總覽</a>
+                <a href="#permit-details" class="hover:text-accentgold transition-colors">權利拆解</a>
+                <a href="#architecture" class="hover:text-accentgold transition-colors">懸臂露台矩陣</a>
+                <a href="#interiors" class="hover:text-accentgold transition-colors">家政與公設革新</a>
+                <a href="#matrix" class="hover:text-accentgold transition-colors">試算與管理費</a>
+                <a href="#market" class="hover:text-accentgold transition-colors">行情與去化分析</a>
             </nav>
             <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accentbg text-accentgold border border-warmborder">
-                    EEWH 銀級綠建築
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                    建照字號：115建字第0002號
                 </span>
             </div>
         </div>
     </div>
-    <!-- Mobile Nav Bar -->
-    <div class="md:hidden flex overflow-x-auto border-t border-warmborder px-4 py-2 gap-4 text-xs font-medium text-secondarydark custom-scrollbar">
-        <a href="#overview" class="whitespace-nowrap hover:text-accentgold">執行摘要</a>
-        <a href="#architecture" class="whitespace-nowrap hover:text-accentgold">建築與懸臂工程</a>
-        <a href="#interiors" class="whitespace-nowrap hover:text-accentgold">公設與靜謐美學</a>
-        <a href="#matrix" class="whitespace-nowrap hover:text-accentgold">戶型與試算</a>
-        <a href="#market" class="whitespace-nowrap hover:text-accentgold">實價行情分析</a>
+    <div class="lg:hidden flex overflow-x-auto border-t border-warmborder px-4 py-2 gap-4 text-xs font-medium text-secondarydark custom-scrollbar">
+        <a href="#overview" class="whitespace-nowrap hover:text-accentgold">建照總覽</a>
+        <a href="#permit-details" class="whitespace-nowrap hover:text-accentgold">權利拆解</a>
+        <a href="#architecture" class="whitespace-nowrap hover:text-accentgold">懸臂露台矩陣</a>
+        <a href="#interiors" class="whitespace-nowrap hover:text-accentgold">家政與公設革新</a>
+        <a href="#matrix" class="whitespace-nowrap hover:text-accentgold">試算與管理費</a>
+        <a href="#market" class="whitespace-nowrap hover:text-accentgold">行情與去化分析</a>
     </div>
 </header>
 
-<!-- Main Container -->
 <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
-    <!-- HERO / OVERVIEW SECTION -->
     <section id="overview" class="space-y-6">
         <div class="bg-cardbg p-8 rounded-2xl border border-warmborder shadow-sm">
-            <div class="max-w-3xl space-y-4">
-                <div class="inline-block px-3 py-1 text-xs font-semibold tracking-wider text-accentgold uppercase bg-accentbg rounded-md">
-                    台北市士林區指標案分析
+            <div class="max-w-4xl space-y-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold tracking-wider text-accentgold uppercase bg-amber-50 rounded-md border border-amber-200">
+                    <span>士林區天母核心指標建案</span>
+                    <span>•</span>
+                    <span>115年正式核准建造執照</span>
                 </div>
                 <h2 class="text-3xl sm:text-4xl font-serif font-bold text-primarydark leading-tight">
-                    天母板塊的破壞式創新：新世代極致高層地標
+                    荷蘭 MVRDV 高空懸臂地標：建照數據與預售市場全景解析
                 </h2>
                 <p class="text-secondarydark leading-relaxed text-base">
-                    本報告深度剖析位於士林區中山北路六段與士東路交界處的「文心天母」。全案由文心建設攜手荷蘭國際建築團隊 MVRDV（Winy Maas）操刀，打破傳統豪宅刻板印象，以「跳脫框架（Out of the Box）」為核心概念，結合數位參數化懸臂幾何、全大理石奢華立面與 Quiet Luxury 靜謐美學，成功刷新天母預售住宅行情天花板。
+                    本報告綜合內政部最新實價登錄資料、台北市政府工務局核准之<strong>115年01月09日建字第0002號建造執照</strong>及<strong>房屋土地預定買賣契約書</strong>最新官方數據。全案由文心建設攜手荷蘭國際團隊 MVRDV（Winy Maas）操刀，坐落士林區三玉段四小段14筆黃金地號，以「Out of the Box」幾何懸臂語彙，重塑中山北路六段天際線。
                 </p>
             </div>
 
-            <!-- Key Metric KPI Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-warmborder">
-                <div class="p-4 rounded-xl bg-stonebg border border-warmborder">
-                    <p class="text-xs text-mutedgray font-medium">預售成交平均單價</p>
+                <div class="p-4 rounded-xl bg-slatebg border border-warmborder">
+                    <p class="text-xs text-mutedgray font-medium">基地總面積 (14筆地號)</p>
+                    <p class="text-2xl font-serif font-bold text-primarydark mt-1">1,029.11 <span class="text-xs text-secondarydark font-sans">坪</span></p>
+                    <p class="text-xs text-mutedgray mt-1">3,402.00 m² (住三分區)</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slatebg border border-warmborder">
+                    <p class="text-xs text-mutedgray font-medium">建照登記總戶數</p>
+                    <p class="text-2xl font-serif font-bold text-primarydark mt-1">93 <span class="text-xs text-secondarydark font-sans">戶</span></p>
+                    <p class="text-xs text-mutedgray mt-1">住宅可售68戶 / 5店面 / 地主戶</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slatebg border border-warmborder">
+                    <p class="text-xs text-mutedgray font-medium">預售均價與最高單價</p>
                     <p class="text-2xl font-serif font-bold text-accentgold mt-1">146.25 <span class="text-xs text-primarydark font-sans">萬/坪</span></p>
-                    <p class="text-xs text-mutedgray mt-1">最高達 166.09 萬/坪</p>
+                    <p class="text-xs text-mutedgray mt-1">24F-A5 創 166.09 萬/坪 最高紀錄</p>
                 </div>
-                <div class="p-4 rounded-xl bg-stonebg border border-warmborder">
-                    <p class="text-xs text-mutedgray font-medium">預售短打去化率</p>
-                    <p class="text-2xl font-serif font-bold text-accentgold mt-1">48.5 %</p>
-                    <p class="text-xs text-mutedgray mt-1">4個月內去化 33/68 戶</p>
+                <div class="p-4 rounded-xl bg-slatebg border border-warmborder">
+                    <p class="text-xs text-mutedgray font-medium">預售去化戶數 (案場訪談)</p>
+                    <p class="text-2xl font-serif font-bold text-accentgold mt-1">33 <span class="text-xs text-primarydark font-sans">戶 / 68 戶</span></p>
+                    <p class="text-xs text-mutedgray mt-1">去化率48.5% (實登揭露27戶)</p>
                 </div>
-                <div class="p-4 rounded-xl bg-stonebg border border-warmborder">
-                    <p class="text-xs text-mutedgray font-medium">最高揭露總價里程碑</p>
-                    <p class="text-2xl font-serif font-bold text-accentgold mt-1">1.818 <span class="text-xs text-primarydark font-sans">億元</span></p>
-                    <p class="text-xs text-mutedgray mt-1">20F-A1 旗艦複層戶</p>
-                </div>
-                <div class="p-4 rounded-xl bg-stonebg border border-warmborder">
-                    <p class="text-xs text-mutedgray font-medium">社區公設比</p>
-                    <p class="text-2xl font-serif font-bold text-accentgold mt-1">36.8 %</p>
-                    <p class="text-xs text-mutedgray mt-1">20年建商產權租賃模式</p>
+            </div>
+
+            <div class="mt-6 p-4 rounded-xl bg-slate-100 border border-slate-200">
+                <p class="text-xs font-bold text-primarydark uppercase tracking-wider mb-2">🗓 工程重要時程與履約保障雙重體系</p>
+                <div class="grid sm:grid-cols-3 gap-4 text-xs text-secondarydark">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-accentgold"></span>
+                        <span><strong>建照核發日期：</strong>115年01月09日</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-accentgold"></span>
+                        <span><strong>開工期限：</strong>115年10月08日前開工</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-accentgold"></span>
+                        <span><strong>完工領照期限：</strong>123年05月08日前</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ARCHITECTURE & CANTILEVER SECTION -->
+    <section id="permit-details" class="space-y-6">
+        <div class="border-l-4 border-accentgold pl-4">
+            <h2 class="text-2xl font-serif font-bold text-primarydark">官方預售契約與建照權利面積拆解</h2>
+            <p class="text-sm text-mutedgray mt-1">
+                根據 115建字第0002號 建造執照與預售契約規範，深度剖析專有與共有面積結構、履約信託及保固承諾。
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+            <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-serif font-bold text-primarydark">總樓地板面積與共有部分比例分配</h3>
+                        <p class="text-xs text-mutedgray">專有面積 4,187.79坪 vs 共有總面積 3,765.93坪 (含大公、小公、車公)</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartArea"></canvas>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs pt-2">
+                    <div class="p-2.5 rounded-lg bg-slatebg border border-warmborder">
+                        <span class="text-mutedgray block">專有部分總面積</span>
+                        <strong class="text-primarydark text-sm">13,843.95 m² (4,187.79坪)</strong>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slatebg border border-warmborder">
+                        <span class="text-mutedgray block">共有部分總面積</span>
+                        <strong class="text-accentgold text-sm">12,449.35 m² (3,765.93坪)</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm flex flex-col justify-between space-y-4">
+                <div>
+                    <h3 class="text-lg font-serif font-bold text-primarydark mb-3">建照契約關鍵法定數據與保障條款</h3>
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 bg-slatebg rounded-xl border border-warmborder space-y-1">
+                            <span class="font-bold text-accentgold block">🏢 共有部分三大分類明細</span>
+                            <p class="text-secondarydark"><strong>大公 (共有部分一)：</strong>6,679.77 m² (約2,020.63坪) — 含1F管委會、梯廳、車道、防災中心、水箱、屋突機房及綠建築設備。</p>
+                            <p class="text-secondarydark"><strong>小公 (共有部分二)：</strong>1,221.72 m² (約369.57坪) — 2~25層當層梯廳與排煙室。</p>
+                            <p class="text-secondarydark"><strong>車公 (共有部分三)：</strong>4,547.86 m² (約1,375.73坪) — 地下1~4層車道與車位空間。</p>
+                        </div>
+
+                        <div class="p-3 bg-slatebg rounded-xl border border-warmborder space-y-1">
+                            <span class="font-bold text-accentblue block">🏦 履約擔保與價金信託</span>
+                            <p class="text-secondarydark">本案預售價金依法實施<strong>「價金信託」</strong>，由<strong>國泰世華商業銀行股份有限公司</strong>負責承作，設立專款專用帳戶控管工程資金。</p>
+                        </div>
+
+                        <div class="p-3 bg-slatebg rounded-xl border border-warmborder space-y-1">
+                            <span class="font-bold text-emerald-700 block">🛡 結構與防水保固期承諾</span>
+                            <p class="text-secondarydark"><strong>結構保固 15 年：</strong>基礎、樑柱、承重牆壁、樓地板、屋頂等。</p>
+                            <p class="text-secondarydark"><strong>防水保固 5 年：</strong>陽台、地下室與對外門窗等防水工程。</p>
+                            <p class="text-secondarydark"><strong>固定建材設備 1 年：</strong>門窗、地磚、設備等。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+                    <strong>🌳 786.41 m² 法定退縮與開放空間：</strong>本大樓留設 786.41 平方公尺人行步道與騎樓，無償開放公眾通行，維持空間通透無圍籬。
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="architecture" class="space-y-6">
         <div class="border-l-4 border-accentgold pl-4">
-            <h2 class="text-2xl font-serif font-bold text-primarydark">荷蘭 MVRDV 懸臂幾何美學與法規突破</h2>
+            <h2 class="text-2xl font-serif font-bold text-primarydark">荷蘭 MVRDV 懸臂工程與「約定專用露台」檢索矩陣</h2>
             <p class="text-sm text-mutedgray mt-1">
-                解析數位參數化設計（Parametric Design）如何轉譯台灣《建築技術規則》，打造向外懸挑達 6 公尺的空中立體花園。
+                結合 2m 陽台 + 2m 附頂蓋涼廊 (Loggia) + 2m 室內深窗 (Bay Window) 的複合 6 米立體懸臂露台，點擊下方樓層查看各戶約定專用權利。
             </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6">
-            <!-- Card 1 -->
-            <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm flex flex-col justify-between space-y-4">
-                <div>
-                    <div class="w-10 h-10 rounded-lg bg-accentbg flex items-center justify-center text-accentgold font-bold text-lg mb-4">
-                        📐
-                    </div>
-                    <h3 class="text-lg font-bold text-primarydark font-serif">懸臂模組目錄 (Catalogue of Cantilevers)</h3>
-                    <p class="text-xs text-secondarydark mt-2 leading-relaxed">
-                        MVRDV 團隊運用演算法模擬每戶最佳日照、通風與視野 privacy，創造像素化（Minecraft 風格）動態立面。全棟中央核心筒維持高效運作，外部則擁有獨一無二的露台地形。
-                    </p>
-                </div>
-                <div class="pt-3 border-t border-warmborder text-xs text-mutedgray">
-                    ✦ 兼具「觀看」與「被觀看」的地標性
+        <div class="grid lg:grid-cols-3 gap-6">
+            <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm space-y-4">
+                <h3 class="text-lg font-bold font-serif text-primarydark">約定專用露台樓層選擇器</h3>
+                <p class="text-xs text-mutedgray">依據契約第九條第五項規定，以下樓層相鄰露台依法不辦理所有權登記，約定由指定戶別維護使用：</p>
+                
+                <div class="grid grid-cols-2 gap-2" id="terrace-selector">
                 </div>
             </div>
 
-            <!-- Card 2 -->
-            <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm flex flex-col justify-between space-y-4">
+            <div class="lg:col-span-2 bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm flex flex-col justify-between space-y-6">
                 <div>
-                    <div class="w-10 h-10 rounded-lg bg-accentbg flex items-center justify-center text-accentgold font-bold text-lg mb-4">
-                        ⚖️
+                    <div class="flex items-center justify-between border-b border-warmborder pb-4">
+                        <div>
+                            <span id="terrace-floor-tag" class="text-xs font-bold text-accentgold uppercase tracking-wider">樓層露台詳情</span>
+                            <h3 id="terrace-floor-title" class="text-2xl font-serif font-bold text-primarydark mt-1">請選擇左側樓層</h3>
+                        </div>
+                        <span id="terrace-units-badge" class="px-3 py-1 bg-amber-50 text-accentgold font-bold text-xs rounded-full border border-amber-200">
+                            約定戶別
+                        </span>
                     </div>
-                    <h3 class="text-lg font-bold text-primarydark font-serif">台灣建築法規之創造性轉譯</h3>
-                    <p class="text-xs text-secondarydark mt-2 leading-relaxed">
-                        巧妙結合 2m 陽台 + 2m 附頂蓋涼廊（Loggia）+ 2m 室內延伸窗台（Bay Window），成功在合法容積框架下打造出深達 <span class="font-bold text-accentgold">6 公尺</span> 的複合型超大立體花園露台。
-                    </p>
-                </div>
-                <div class="pt-3 border-t border-warmborder text-xs text-mutedgray">
-                    ✦ 徹底顛覆傳統 2 米淺陽台限制
-                </div>
-            </div>
 
-            <!-- Card 3 -->
-            <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm flex flex-col justify-between space-y-4">
-                <div>
-                    <div class="w-10 h-10 rounded-lg bg-accentbg flex items-center justify-center text-accentgold font-bold text-lg mb-4">
-                        🏛
+                    <div class="mt-6 space-y-4">
+                        <div class="p-4 bg-slatebg rounded-xl border border-warmborder space-y-2">
+                            <h4 class="text-xs font-bold text-accentgold uppercase">約定專用權利歸屬與法規依據</h4>
+                            <p id="terrace-legal-desc" class="text-xs text-secondarydark leading-relaxed">
+                                點擊左側樓層按鈕，檢視建照平面圖登記之約定專用露台戶別與配置特色。
+                            </p>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4 text-xs">
+                            <div class="p-3 bg-slatebg rounded-xl border border-warmborder">
+                                <span class="text-mutedgray block font-medium">懸臂景觀與結構特點</span>
+                                <span id="terrace-feature" class="text-primarydark font-bold mt-1 block">-</span>
+                            </div>
+                            <div class="p-3 bg-slatebg rounded-xl border border-warmborder">
+                                <span class="text-mutedgray block font-medium">代表性單價與去化動態</span>
+                                <span id="terrace-price-stat" class="text-accentgold font-bold mt-1 block">-</span>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold text-primarydark font-serif">SC 鋼骨構造與全天然大理石包覆</h3>
-                    <p class="text-xs text-secondarydark mt-2 leading-relaxed">
-                        築遠工程搭配日商中鹿營造，克服強震強風下的偏心載重與扭轉應力。外觀捨棄輕質鋁板，採用全天然石材包覆，呈現反重力般的「輕盈厚重感」。
-                    </p>
                 </div>
-                <div class="pt-3 border-t border-warmborder text-xs text-mutedgray">
-                    ✦ 地上 25 層 / 地下 4 層高規格 SC 結構
-                </div>
-            </div>
-        </div>
 
-        <!-- Architectural Visual Interactive Diagram -->
-        <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm">
-            <h3 class="text-base font-bold text-primarydark mb-4">懸臂露台空間複合結構示意</h3>
-            <div class="grid sm:grid-cols-3 gap-4 text-center">
-                <div class="p-4 rounded-xl bg-accentbg border border-warmborder">
-                    <span class="text-xs font-semibold text-accentgold">ZONE A</span>
-                    <h4 class="font-bold text-primarydark text-sm mt-1">室內延伸區域 (2M)</h4>
-                    <p class="text-xs text-mutedgray mt-1">Interior Bay Window 室內深窗框</p>
-                </div>
-                <div class="p-4 rounded-xl bg-accentbg border border-warmborder">
-                    <span class="text-xs font-semibold text-accentgold">ZONE B</span>
-                    <h4 class="font-bold text-primarydark text-sm mt-1">附頂蓋涼廊 (2M)</h4>
-                    <p class="text-xs text-mutedgray mt-1">Covered Loggia 半戶外休閒區</p>
-                </div>
-                <div class="p-4 rounded-xl bg-accentbg border border-warmborder">
-                    <span class="text-xs font-semibold text-accentgold">ZONE C</span>
-                    <h4 class="font-bold text-primarydark text-sm mt-1">開放式空中陽台 (2M)</h4>
-                    <p class="text-xs text-mutedgray mt-1">Open Balcony 立體植栽景觀露台</p>
+                <div class="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-xs text-slate-300">
+                        <p class="font-bold text-white text-sm mb-1">🏗 SC 鋼骨結構與全天然大理石包覆</p>
+                        <p>築遠工程搭配日商中鹿營造，克服強震下 6 米懸臂偏心應力，外觀全大理石包覆。</p>
+                    </div>
+                    <div class="text-right whitespace-nowrap">
+                        <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs rounded-lg font-semibold">
+                            EEWH 銀級綠建築標章
+                        </span>
+                    </div>
                 </div>
             </div>
-            <p class="text-xs text-center text-mutedgray mt-4">
-                三者水平與垂直拼接，達成總深 6 公尺之動態立體森林（全案取得 EEWH 銀級綠建築認證）。
-            </p>
         </div>
     </section>
 
-    <!-- INTERIORS & FACILITIES SECTION -->
     <section id="interiors" class="space-y-6">
         <div class="border-l-4 border-accentgold pl-4">
-            <h2 class="text-2xl font-serif font-bold text-primarydark">公共設施營運創新與靜謐美學 (Quiet Luxury)</h2>
+            <h2 class="text-2xl font-serif font-bold text-primarydark">公設營運創新與「全室無後陽台」家政革命</h2>
             <p class="text-sm text-mutedgray mt-1">
-                由關傳雍設計師與瀚翔景觀盧胤翰聯手打造，從產權營運模式到室內家政空間進行徹底變革。
+                由關傳雍設計師與瀚翔景觀盧胤翰聯手打造，顛覆傳統豪宅公設產權與家務空間配置。
             </p>
         </div>
 
-        <!-- Interactive Tabs for Features -->
         <div class="bg-cardbg rounded-2xl border border-warmborder shadow-sm overflow-hidden">
-            <div class="flex border-b border-warmborder bg-stonebg overflow-x-auto custom-scrollbar">
+            <div class="flex border-b border-warmborder bg-slatebg overflow-x-auto custom-scrollbar">
                 <button onclick="switchTab('tab-facility')" id="btn-tab-facility" class="tab-btn active px-6 py-4 text-sm font-medium whitespace-nowrap text-primarydark hover:text-accentgold">
-                    20年租賃公設產權模式
+                    20年租賃公設與低公設比
                 </button>
                 <button onclick="switchTab('tab-laundry')" id="btn-tab-laundry" class="tab-btn px-6 py-4 text-sm font-medium whitespace-nowrap text-primarydark hover:text-accentgold">
                     家政革命：室內 Utility Room
@@ -264,73 +334,70 @@
             </div>
 
             <div class="p-6">
-                <!-- Tab Content 1 -->
                 <div id="tab-facility" class="space-y-4">
                     <div class="grid md:grid-cols-2 gap-6 items-center">
                         <div class="space-y-3">
-                            <span class="text-xs px-2.5 py-1 bg-accentbg text-accentgold font-bold rounded-md">產權創新與低公設比</span>
-                            <h3 class="text-xl font-bold font-serif text-primarydark">主要公設集中於 1F 店面上方，產權由建商保留租賃</h3>
+                            <span class="text-xs px-2.5 py-1 bg-amber-50 text-accentgold font-bold rounded-md border border-amber-200">產權創新與低虛坪</span>
+                            <h3 class="text-xl font-bold font-serif text-primarydark">主要休閒公設集中 1F 店面上方，建商保留產權出租 20 年</h3>
                             <p class="text-sm text-secondarydark leading-relaxed">
-                                文心天母採取市場罕見的創新規劃：社區主要休閒設施（泳池、水花園、宴會廳等）產權歸文心建設所有，以出租給社區住戶形式營運長達 <span class="font-bold text-accentgold">20 年</span>。
+                                「文心天母」採取創新規劃：社區泳池、水花園、宴會廳等主要設施產權由文心建設保留，以長達 <span class="font-bold text-accentgold">20 年</span> 的租賃模式提供社區住戶專屬使用。
                             </p>
                             <ul class="text-xs text-secondarydark space-y-2 list-disc pl-4">
-                                <li><strong>公設比維持 36.8%：</strong>有效降低買方虛坪公設負擔，室內實坪使用效益極大化。</li>
-                                <li><strong>品質永久維護：</strong>建商長期持有所產生的維護誘因，避免一般社區因公設修繕經費不足導致荒廢。</li>
+                                <li><strong>公設比維持 36.8%：</strong>大幅降低買方買虛坪負擔，室內實際使用空間極大化。</li>
+                                <li><strong>長效維護機制：</strong>建商產權長期持有，確保物業修繕品質與設施永續新穎。</li>
                             </ul>
                         </div>
-                        <div class="p-5 rounded-xl bg-stonebg border border-warmborder space-y-3">
-                            <h4 class="text-sm font-bold text-primarydark">景觀與車線儀式感 (瀚翔景觀)</h4>
+                        <div class="p-5 rounded-xl bg-slatebg border border-warmborder space-y-3">
+                            <h4 class="text-sm font-bold text-primarydark">瀚翔景觀與車線車道儀式感</h4>
                             <p class="text-xs text-secondarydark leading-relaxed">
-                                一樓基地退縮打造綠洲，迎賓車廊上方由外凸建築量體形成天然巨型雨遮，搭配階梯水景與濃密樹冠露天泳池，打造出極具隱密感的精品渡假村體驗。
+                                1F 基地大退縮打造綠洲，迎賓車廊上方由懸臂大樓量體形成天然巨型雨遮。地下 1~4 層車道總面積達 4,547.86 m²（1,375.73坪），寬敞流暢。
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tab Content 2 -->
                 <div id="tab-laundry" class="hidden space-y-4">
                     <div class="grid md:grid-cols-2 gap-6 items-center">
                         <div class="space-y-3">
-                            <span class="text-xs px-2.5 py-1 bg-accentbg text-accentgold font-bold rounded-md">建築外觀與生活機能雙贏</span>
-                            <h3 class="text-xl font-bold font-serif text-primarydark">全面取消戶外工作陽台，轉移至「室內家政間」</h3>
+                            <span class="text-xs px-2.5 py-1 bg-amber-50 text-accentgold font-bold rounded-md border border-amber-200">立面美學與室內機能</span>
+                            <h3 class="text-xl font-bold font-serif text-primarydark">全案全面取消後陽台，轉移至室內「家政工作間」</h3>
                             <p class="text-sm text-secondarydark leading-relaxed">
-                                全案突破傳統台灣住宅標配，徹底取消後陽台，統一於室內規劃獨立「家政工作間（Utility Room）」。搭配高級無縫石材檯面與隱藏式通風櫃體，昇華家務勞動質感。
+                                突破傳統台灣住宅標配，全案建照圖面徹底取消傳統後工作陽台，統一於室內規劃獨立「家政工作間 (Utility Room)」。
                             </p>
                             <div class="grid grid-cols-2 gap-2 text-xs pt-2">
                                 <div class="p-3 bg-white rounded-lg border border-warmborder">
                                     <strong class="text-accentgold block">對外效益</strong>
-                                    避免懸掛晾衣破壞 MVRDV 大理石像素立面的藝術視覺。
+                                    避免懸掛衣物破壞 MVRDV 大理石像素立面的藝術美感。
                                 </div>
                                 <div class="p-3 bg-white rounded-lg border border-warmborder">
                                     <strong class="text-accentgold block">對內效益</strong>
-                                    提供媲美歐美豪宅的乾爽、優雅室內家政與收納空間。
+                                    提供乾爽、隱密且不受天候影響的歐美級室內家政收納空間。
                                 </div>
                             </div>
                         </div>
-                        <div class="p-5 rounded-xl bg-stonebg border border-warmborder space-y-3">
-                            <h4 class="text-sm font-bold text-primarydark">全毛胚交屋與客製化定位</h4>
+                        <div class="p-5 rounded-xl bg-slatebg border border-warmborder space-y-3">
+                            <h4 class="text-sm font-bold text-primarydark">全毛胚交屋與尊榮客製化</h4>
                             <p class="text-xs text-secondarydark leading-relaxed">
-                                全案採「全面毛胚交屋」，將空間格局與建材選擇權完整交還給企業主客戶，滿足高度客製化與招待所規劃之需求。
+                                全案採「全毛胚交屋」，將空間格局與高級建材選擇權完整留給企業主買方，滿足私人接待所與極致居所的規劃需求。
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tab Content 3 -->
                 <div id="tab-interior" class="hidden space-y-4">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="space-y-3">
-                            <span class="text-xs px-2.5 py-1 bg-accentbg text-accentgold font-bold rounded-md">關傳雍大師公設風格</span>
-                            <h3 class="text-xl font-bold font-serif text-primarydark">「洗滌視覺 (Eye Wash)」的靜謐奢華</h3>
+                            <span class="text-xs px-2.5 py-1 bg-amber-50 text-accentgold font-bold rounded-md border border-amber-200">關傳雍大師公設美學</span>
+                            <h3 class="text-xl font-bold font-serif text-primarydark">「洗滌視覺 (Eye Wash)」的當代靜謐奢華</h3>
                             <p class="text-sm text-secondarydark leading-relaxed">
-                                接待大廳與公共空間大量運用荒面天然大理石、鋼刷實木格柵與岩板面材。照明採用 150-200 Lux 低照度漫射光源與洗牆燈帶，呈現當代藝廊般沉靜內斂氛圍。
+                                門廳與公共空間大量採用荒面天然大理石、鋼刷實木格柵與岩板。照明採 150-200 Lux 低照度漫射光源與洗牆燈帶，呈現靜謐藝廊質感。
                             </p>
                         </div>
-                        <div class="p-5 rounded-xl bg-stonebg border border-warmborder space-y-3">
+                        <div class="p-5 rounded-xl bg-slatebg border border-warmborder space-y-3">
                             <span class="text-xs font-bold text-accentgold">77 坪 A2 旗艦樣品屋規格</span>
                             <h4 class="text-sm font-bold text-primarydark">裝修造價達每坪 24 萬 ～ 40 萬元</h4>
                             <p class="text-xs text-secondarydark leading-relaxed">
-                                凡爾賽拼花實木地坪嵌黑色石材、雕刻白大理石波浪吧檯中島、Hansgrohe 定溫蓮蓬花灑、Duravit by Philippe Starck 智慧馬桶與 Barrisol 光膜天花，展現極致材質肌理。
+                                凡爾賽拼花實木地坪嵌黑色石材、波浪大理石中島吧檯、Hansgrohe 定溫花灑、Duravit by Starck 智慧馬桶與 Barrisol 光膜天花。
                             </p>
                         </div>
                     </div>
@@ -339,34 +406,30 @@
         </div>
     </section>
 
-    <!-- INTERACTIVE PRODUCT MATRIX & PRICING CALCULATOR -->
     <section id="matrix" class="space-y-6">
         <div class="border-l-4 border-accentgold pl-4">
-            <h2 class="text-2xl font-serif font-bold text-primarydark">產品級距矩陣與車位試算器</h2>
+            <h2 class="text-2xl font-serif font-bold text-primarydark">產品級距試算與社區管理費動態計算機</h2>
             <p class="text-sm text-mutedgray mt-1">
-                全案共 88 戶（5店面、地主保留 20 戶、可售純住宅 68 戶）。選擇下方產品規格，動態模擬總價與坪數配置：
+                依據預售契約第十四條條款：<strong>房屋管理費每坪 250 元/月</strong>（不含公共水電），<strong>汽車車位管理費每位 1,200 元/月</strong>。請選取產品級距：
             </p>
         </div>
 
         <div class="grid lg:grid-cols-3 gap-6">
-            <!-- Selector Column -->
             <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm space-y-4">
-                <h3 class="text-lg font-bold font-serif text-primarydark">戶型產品線選擇</h3>
+                <h3 class="text-lg font-bold font-serif text-primarydark">1. 選擇戶型產品線</h3>
                 <div class="space-y-2" id="unit-selector-container">
-                    <!-- Buttons inserted dynamically via JS -->
                 </div>
 
                 <div class="pt-4 border-t border-warmborder space-y-3">
-                    <label class="block text-xs font-semibold text-secondarydark">車位數量搭配試算</label>
-                    <select id="parking-count" onchange="calculatePrice()" class="w-full p-2.5 text-sm bg-stonebg border border-warmborder rounded-lg text-primarydark focus:ring-1 focus:ring-accentgold focus:outline-none">
-                        <option value="1">1 個坡道平面車位 (以 400 萬計)</option>
-                        <option value="2" selected>2 個坡道平面車位 (以 800 萬計)</option>
-                        <option value="3">3 個坡道平面車位 (以 1200 萬計)</option>
+                    <label class="block text-xs font-semibold text-secondarydark">2. 車位數量配置 (平面車位)</label>
+                    <select id="parking-count" onchange="calculatePrice()" class="w-full p-2.5 text-sm bg-slatebg border border-warmborder rounded-lg text-primarydark focus:ring-1 focus:ring-accentgold focus:outline-none">
+                        <option value="1">1 個平面車位 (以 400 萬計)</option>
+                        <option value="2" selected>2 個平面車位 (以 800 萬計)</option>
+                        <option value="3">3 個平面車位 (以 1200 萬計)</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Dynamic Result Display Column -->
             <div class="lg:col-span-2 bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm flex flex-col justify-between space-y-6">
                 <div>
                     <div class="flex items-center justify-between border-b border-warmborder pb-4">
@@ -374,77 +437,81 @@
                             <span id="display-code" class="text-xs font-bold text-accentgold uppercase tracking-wider">A1 / A3 戶型</span>
                             <h3 id="display-title" class="text-2xl font-serif font-bold text-primarydark mt-1">48 ～ 54 坪型（主力 50 坪距）</h3>
                         </div>
-                        <span id="display-absorption" class="px-3 py-1 bg-accentbg text-accentgold font-bold text-xs rounded-full">
-                            去化率 32.25% (10/31)
+                        <span id="display-absorption" class="px-3 py-1 bg-amber-50 text-accentgold font-bold text-xs rounded-full border border-amber-200">
+                            預售月均去化 2.50 戶/月
                         </span>
                     </div>
 
                     <div class="grid sm:grid-cols-3 gap-4 mt-6">
-                        <div class="p-3 bg-stonebg rounded-xl border border-warmborder">
+                        <div class="p-3 bg-slatebg rounded-xl border border-warmborder">
                             <p class="text-xs text-mutedgray">權狀淨坪數 (扣車位)</p>
                             <p id="display-ping" class="text-lg font-bold text-primarydark mt-1">48.0 ~ 53.9 坪</p>
                         </div>
-                        <div class="p-3 bg-stonebg rounded-xl border border-warmborder">
+                        <div class="p-3 bg-slatebg rounded-xl border border-warmborder">
                             <p class="text-xs text-mutedgray">成交單價區間</p>
                             <p id="display-unit-price" class="text-lg font-bold text-accentgold mt-1">127.09 ~ 158.49 萬/坪</p>
                         </div>
-                        <div class="p-3 bg-stonebg rounded-xl border border-warmborder">
+                        <div class="p-3 bg-slatebg rounded-xl border border-warmborder">
                             <p class="text-xs text-mutedgray">房屋純總價 (扣車位)</p>
                             <p id="display-house-price" class="text-lg font-bold text-primarydark mt-1">6,176 ~ 7,730 萬元</p>
                         </div>
                     </div>
 
-                    <div class="mt-6 p-4 rounded-xl bg-accentbg border border-warmborder space-y-2">
-                        <h4 class="text-xs font-bold text-accentgold uppercase">定位與空間建議</h4>
-                        <p id="display-desc" class="text-xs text-secondarydark leading-relaxed">
-                            全案入門門檻，均配置單一車位。適合單身貴族、頂客族或作為企業主的第二接待招待所，可規劃寬敞雙房雙衛浴。
-                        </p>
+                    <div class="grid sm:grid-cols-2 gap-4 mt-4">
+                        <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-1">
+                            <h4 class="text-xs font-bold text-accentgold uppercase">💡 預估自備款與貸款 (80% 房貸)</h4>
+                            <p id="calc-loan-breakdown" class="text-xs text-secondarydark leading-relaxed font-mono">
+                                自備款 (20%): 約 1,315 ~ 1,706 萬元<br>銀行貸款 (80%): 約 5,261 ~ 6,824 萬元
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-sky-50/60 border border-sky-200 space-y-1">
+                            <h4 class="text-xs font-bold text-accentblue uppercase">🏢 每月社區管理費預估 (契約明訂)</h4>
+                            <p id="calc-mgmt-fee" class="text-xs text-secondarydark leading-relaxed font-mono">
+                                房屋管理費: $12,000 ~ $13,475 /月<br>車位管理費: $2,400 /月 (2車位)<br><strong class="text-primarydark">預估月總管理費: $14,400 ~ $15,875 /月</strong>
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Simulation Result Bar -->
                 <div class="p-4 rounded-xl bg-primarydark text-white flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs text-warmborder">含車位試算預估總價級距</p>
-                        <p id="calc-total-range" class="text-2xl font-serif font-bold text-accentgold mt-0.5">6,576 ～ 8,530 萬元</p>
+                        <p class="text-xs text-slate-300">含車位試算預估總價級距</p>
+                        <p id="calc-total-range" class="text-2xl font-serif font-bold text-amber-400 mt-0.5">6,976 ～ 8,530 萬元</p>
                     </div>
-                    <div class="text-right text-xs text-warmborder">
+                    <div class="text-right text-xs text-slate-300">
                         <p>坪數挑高：3.4 公尺 (大廳 6 公尺)</p>
-                        <p>單層配置：4 戶 3 電梯核筒</p>
+                        <p>單層配置：4 戶 3 電梯核心筒</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- MARKET ANALYTICS & CHARTS SECTION -->
     <section id="market" class="space-y-6">
         <div class="border-l-4 border-accentgold pl-4">
-            <h2 class="text-2xl font-serif font-bold text-primarydark">實價登錄行情解析與景觀溢價分析</h2>
+            <h2 class="text-2xl font-serif font-bold text-primarydark">實價登錄行情解析與預售動態分析</h2>
             <p class="text-sm text-mutedgray mt-1">
-                依據內政部實價登錄 27 筆公開成交數據（115年4月至8月），進行產品分層與樓層景觀溢價統計。
+                結合內政部實價登錄（公開揭露 27 戶）與案場現場訪談第一手數據（實際銷售 33 戶，去化率 48.5%）：
             </p>
         </div>
 
-        <!-- Dynamic Charts Grid -->
         <div class="grid lg:grid-cols-2 gap-6">
-            <!-- Chart 1: Average Price vs Absorption -->
             <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-serif font-bold text-primarydark">各產品級距去化率與最高單價</h3>
-                        <p class="text-xs text-mutedgray">比較各坪數型態之市場去化熱度與創價極限</p>
+                        <h3 class="text-lg font-serif font-bold text-primarydark">各產品級距預售去化速度與累積去化率</h3>
+                        <p class="text-xs text-mutedgray">4個月預售窗口之月均去化量（戶/月）與總去化達成率</p>
                     </div>
                 </div>
                 <div class="chart-container">
                     <canvas id="chartAbsorption"></canvas>
                 </div>
                 <p class="text-xs text-mutedgray text-center pt-2">
-                    ✦ 數據顯示「109~112坪旗艦複層」去化率高達 75%，凸顯頂級買家對稀缺規格的強烈偏好。
+                    ✦ 50坪入門款以月均 <span class="text-accentgold font-bold">2.50 戶/月</span> 去化速度稱霸；110坪複層戶展現 <span class="text-accentgold font-bold">75%</span> 的高去化達成率。
                 </p>
             </div>
 
-            <!-- Chart 2: Floor vs Price Premium -->
             <div class="bg-cardbg p-6 rounded-2xl border border-warmborder shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
@@ -456,68 +523,77 @@
                     <canvas id="chartElevation"></canvas>
                 </div>
                 <p class="text-xs text-mutedgray text-center pt-2">
-                    ✦ 24F-A5（大露台戶）以 166.09 萬/坪創全案單價最高紀錄；高樓層具備陽明山無敵景觀。
+                    ✦ 24F-A5（大露台戶）以 166.09 萬/坪創最高單價；高樓層具備陽明山無敵景觀視野。
                 </p>
             </div>
         </div>
 
-        <!-- Real Estate Data Table -->
         <div class="bg-cardbg rounded-2xl border border-warmborder shadow-sm overflow-hidden space-y-4 p-6">
-            <h3 class="text-lg font-serif font-bold text-primarydark">實價登錄數據匯整明細表</h3>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <h3 class="text-lg font-serif font-bold text-primarydark">實價登錄揭露與銷售進度明細表</h3>
+                <span class="text-xs text-mutedgray bg-slatebg px-3 py-1 rounded-full border border-warmborder">
+                    建商可售 68 戶 | 案場實售 33 戶 | 實登揭露 27 戶
+                </span>
+            </div>
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-stonebg border-b border-warmborder text-secondarydark font-bold">
+                        <tr class="bg-slatebg border-b border-warmborder text-secondarydark font-bold">
                             <th class="p-3">產品坪數級距</th>
                             <th class="p-3">涵蓋戶別</th>
                             <th class="p-3">揭露樓層</th>
                             <th class="p-3">權狀坪數(扣車位)</th>
                             <th class="p-3">房屋純總價(萬元)</th>
                             <th class="p-3">成交單價(萬/坪)</th>
-                            <th class="p-3">已揭露占比</th>
-                            <th class="p-3">市場解析</th>
+                            <th class="p-3">去化速度</th>
+                            <th class="p-3">實登揭露占比</th>
+                            <th class="p-3">市場解析與約定露台動態</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-warmborder text-secondarydark">
-                        <tr class="hover:bg-stonebg/50 transition-colors">
+                        <tr class="hover:bg-slatebg/50 transition-colors">
                             <td class="p-3 font-bold text-primarydark">48 ～ 54 坪型</td>
                             <td class="p-3">A1, A3</td>
                             <td class="p-3">2F~15F, 22F</td>
                             <td class="p-3">48.00 ～ 53.91 坪</td>
                             <td class="p-3">6,176 ～ 7,730 萬</td>
-                            <td class="p-3 text-accentgold font-bold">127.09 ～ 158.49</td>
+                            <td class="p-3 font-bold">127.09 ～ 158.49</td>
+                            <td class="p-3 text-accentgold font-bold">2.50 戶/月</td>
                             <td class="p-3">32.25% (10/31)</td>
-                            <td class="p-3">入門低門檻，2F以127.09萬定錨；13F/22F享約定專用露台。</td>
+                            <td class="p-3">全案去化最快戶型，門檻低。11F(A1-11F)、13F(A3-13F)、22F(A1-22F)配置約定專用露台。</td>
                         </tr>
-                        <tr class="hover:bg-stonebg/50 transition-colors">
+                        <tr class="hover:bg-slatebg/50 transition-colors">
                             <td class="p-3 font-bold text-primarydark">65 ～ 71 坪型</td>
                             <td class="p-3">A2, A5</td>
                             <td class="p-3">10F~24F</td>
                             <td class="p-3">65.05 ～ 70.75 坪</td>
                             <td class="p-3">9,950 ～ 11,492 萬</td>
-                            <td class="p-3 text-accentgold font-bold">145.06 ～ 166.09</td>
+                            <td class="p-3 font-bold">145.06 ～ 166.09</td>
+                            <td class="p-3 text-accentgold font-bold">1.75 戶/月</td>
                             <td class="p-3">43.75% (7/16)</td>
-                            <td class="p-3">中高樓景觀戶。24F-A5 附 11.36 坪露台，以 166.09 萬/坪創單價紀錄。</td>
+                            <td class="p-3">中高樓景觀戶。24F-A5 附帶 11.36 坪 MVRDV 懸臂大露台，以 166.09 萬/坪創最高單價。</td>
                         </tr>
-                        <tr class="hover:bg-stonebg/50 transition-colors">
+                        <tr class="hover:bg-slatebg/50 transition-colors">
                             <td class="p-3 font-bold text-primarydark">73 ～ 78 坪型</td>
                             <td class="p-3">A2, A5</td>
                             <td class="p-3">2F~17F, 23F</td>
                             <td class="p-3">73.66 ～ 77.80 坪</td>
                             <td class="p-3">9,805 ～ 12,676 萬</td>
-                            <td class="p-3 text-accentgold font-bold">128.15 ～ 162.96</td>
+                            <td class="p-3 font-bold">128.15 ～ 162.96</td>
+                            <td class="p-3 text-accentgold font-bold">1.75 戶/月</td>
                             <td class="p-3">21.87% (7/32)</td>
-                            <td class="p-3">換屋主力大宅，大面寬採光客廳，配置雙車位，總價跨越 1 ~ 1.25 億。</td>
+                            <td class="p-3">換屋主力大宅，總價跨越 1 ~ 1.25 億。4F(A2-4F)、19F/20F/23F均有約定專用露台戶別。</td>
                         </tr>
-                        <tr class="hover:bg-stonebg/50 transition-colors bg-accentbg/30">
+                        <tr class="hover:bg-slatebg/50 transition-colors bg-amber-50/30">
                             <td class="p-3 font-bold text-accentgold">109 ～ 112 坪型</td>
                             <td class="p-3 font-bold">A1, A3 複層</td>
                             <td class="p-3 font-bold">17F, 20F</td>
                             <td class="p-3 font-bold">109.54 ～ 111.41 坪</td>
                             <td class="p-3 font-bold">16,303 ～ 17,320 萬</td>
-                            <td class="p-3 text-accentgold font-bold">148.15 ～ 158.13</td>
+                            <td class="p-3 font-bold">148.15 ～ 158.13</td>
+                            <td class="p-3 text-accentgold font-bold">0.75 戶/月</td>
                             <td class="p-3 font-bold text-accentgold">75.00% (3/4)</td>
-                            <td class="p-3">稀有內梯複層高空別墅。20F-A1 含車位總價 1.818 億創全案最高紀錄。</td>
+                            <td class="p-3">稀有高空複層樓中樓，去化率達 75%，其中 20F-A1 含車位總價 1.818 億元創全案最高總價。</td>
                         </tr>
                     </tbody>
                 </table>
@@ -525,30 +601,26 @@
         </div>
     </section>
 
-    <!-- CONCLUSION & MARKET STRATEGY -->
     <section class="bg-primarydark text-white p-8 rounded-2xl space-y-6 shadow-xl">
-        <div class="max-w-3xl space-y-3">
-            <span class="text-xs font-semibold text-accentgold uppercase tracking-widest">綜合評估與長線價值</span>
-            <h2 class="text-2xl sm:text-3xl font-serif font-bold text-white">重塑天母中山北路天際線的當代里程碑</h2>
-            <p class="text-sm text-warmborder leading-relaxed">
-                「文心天母」不僅是一項房地產豪宅推案，更是一場融合國際數位建築、法規彈性轉譯與後疫情時代靜謐奢華風格的深度實踐。相較於區域過去十年創下高價的「華固天鑄」，文心天母以全案平均近 146.25 萬/坪的強勁實績，證明了天母區域隱藏的高強度在地換屋動能。隨著工程竣工與全大理石外觀落成，本案必將強勢確立其在台北市頂級名宅中的領導地位。
+        <div class="max-w-4xl space-y-3">
+            <span class="text-xs font-semibold text-amber-400 uppercase tracking-widest">綜合評估與建案長線價值</span>
+            <h2 class="text-2xl sm:text-3xl font-serif font-bold text-white">重塑天母中山北路天際線的當代藝術地標</h2>
+            <p class="text-sm text-slate-300 leading-relaxed">
+                「文心天母」不僅是一項豪宅建案，更是結合國際數位參數化建築、國泰世華信託履約保障、15年結構保固與「全室無後陽台」革新語彙的深度實踐。建商採取精準的「預售短打測試市場＋10月基地動工即封案」戰略，在預售階段即達成 33 戶成交（近 5 成去化率），成功將實價登錄單價定錨在 146 ~ 166 萬/坪的高檔位。隨著 115 年 10 月動工與未來全天然大理石立面落成，成屋階段必將發揮更高地標溢價效果。
             </p>
         </div>
     </section>
 
 </main>
 
-<!-- Footer -->
 <footer class="bg-white border-t border-warmborder mt-12 py-8">
     <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
         <p class="text-xs text-mutedgray">文心天母（Out of the Box）高端住宅開發與市場價值分析報告</p>
-        <p class="text-xs text-mutedgray">資料來源：內政部實價登錄系統、文心建設公開簡報與現場參訪數據匯整</p>
+        <p class="text-xs text-mutedgray">資料來源：內政部實價登錄系統、115建字第0002號建造執照、文心天母預售契約書與案場訪談數據匯整</p>
     </div>
 </footer>
 
-<!-- JavaScript Interactive Logic -->
 <script>
-    // Data Matrix for Apartment Types
     const apartmentTypes = [
         {
             code: 'A1 / A3 戶型',
@@ -559,8 +631,8 @@
             unitPriceMax: 158.49,
             housePriceMin: 6176,
             housePriceMax: 7730,
-            absorption: '去化率 32.25% (10/31)',
-            desc: '全案入門門檻，均配置單一車位。最吸引科技新貴與自營商做為第二招待所或精品雙房使用。13F與22F戶別因享有約定專用大露台，單價表現顯著拉升。'
+            absorption: '預售月均去化 2.50 戶/月',
+            desc: '全案去化速度最快產品線，入門門檻低，最吸引科技企業主與自營商做為第二招待所或精品雙房使用。11F(A1-11F)、13F(A3-13F)與22F(A1-22F)戶別享有約定專用大露台，單價表現亮眼。'
         },
         {
             code: 'A2 / A5 戶型 (中大坪數)',
@@ -571,8 +643,8 @@
             unitPriceMax: 166.09,
             housePriceMin: 9950,
             housePriceMax: 11492,
-            absorption: '去化率 43.75% (7/16)',
-            desc: '中高樓層景觀戶群。客廳擁大面寬採光與雙主臥潛力。其中 24F-A5 戶型因附帶 11.36 坪 MVRDV 懸臂大露台，以 166.09 萬/坪創下全案最高單價紀錄。'
+            absorption: '預售月均去化 1.75 戶/月',
+            desc: '中高樓層景觀戶群，預售期間穩定去化 7 戶。客廳擁大面寬採光。其中 24F-A5 戶型因附帶 11.36 坪 MVRDV 懸臂大露台，以 166.09 萬/坪創下全案最高單價紀錄。'
         },
         {
             code: 'A2 / A5 戶型 (主力大宅)',
@@ -583,8 +655,8 @@
             unitPriceMax: 162.96,
             housePriceMin: 9805,
             housePriceMax: 12676,
-            absorption: '去化率 21.87% (7/32)',
-            desc: '大宅規格的絕對主力，多配置雙車位，總價全面跨入 1 億至 1.25 億元級別。此區間樣品屋投入高達每坪 24 萬至 40 萬裝修預算，呈現 Quiet Luxury 極致奢華。'
+            absorption: '預售月均去化 1.75 戶/月',
+            desc: '大宅規格絕對主力，總價全面跨入 1 億至 1.25 億元級別。4F(A2-4F)、19F/20F/23F/24F均有約定專用露台戶別。樣品屋呈現 Quiet Luxury 極致奢華。'
         },
         {
             code: 'A1 / A3 旗艦複層',
@@ -595,36 +667,107 @@
             unitPriceMax: 158.13,
             housePriceMin: 16303,
             housePriceMax: 17320,
-            absorption: '去化率 75.00% (3/4)',
-            desc: '極度稀有之室內專屬內梯複層格局。垂直切割公私領域，具備高空立體別墅氣度。其中 20F-A1 含車位總價達 1.818 億元，創下全案最高總價里程碑。'
+            absorption: '預售月均去化 0.75 戶/月',
+            desc: '極度稀有之專屬內梯高空複層格局。總量僅 4 戶，預售賣出 3 戶，去化率達 75%。其中 20F-A1 含車位總價達 1.818 億元，創下全案最高總價紀錄。'
+        }
+    ];
+
+    const terraceFloors = [
+        {
+            floor: '2F',
+            units: 'E-2F',
+            desc: '約定店舖 E-2F 管理使用。位於低樓層露台，緊鄰綠蔭花園。',
+            feature: '低樓層綠洲露台，兼具商業或辦公彈性',
+            priceStat: '低樓層整體成交定錨 127.09 萬/坪'
+        },
+        {
+            floor: '4F',
+            units: 'A2-4F',
+            desc: '約定 A2-4F 戶管理使用。擁有寬闊的低樓層大景觀露台空間。',
+            feature: '低樓層稀有大露台，樹海景觀第一排',
+            priceStat: '成交單價約 130 ~ 135 萬/坪'
+        },
+        {
+            floor: '11F',
+            units: 'A1-11F',
+            desc: '約定 A1-11F 戶管理使用。中樓層幾何外凸懸臂露台，採光極佳。',
+            feature: '中樓層懸臂景觀露台，視角延伸無阻擋',
+            priceStat: '成交單價約 148 ~ 152 萬/坪'
+        },
+        {
+            floor: '13F',
+            units: 'A3-13F',
+            desc: '約定 A3-13F 戶管理使用。位於黃金中高樓層，極具像素藝術視覺。',
+            feature: '懸臂特色露台，極致私密性與開闊視野',
+            priceStat: '創 158.49 萬/坪 中高樓層高單價'
+        },
+        {
+            floor: '19F',
+            units: 'A1-19F, A2-19F, A5-19F',
+            desc: '約定 A1-19F、A2-19F 及 A5-19F 三戶分別管理使用。多戶連貫高空露台群。',
+            feature: '高空多戶型景觀露台，直面陽明山山景',
+            priceStat: '高樓層均價突破 155 萬/坪'
+        },
+        {
+            floor: '20F',
+            units: 'A2-20F, A5-20F',
+            desc: '約定 A2-20F 及 A5-20F 戶管理使用。高樓層奢華露台，視野極其雄偉。',
+            feature: '高樓層旗艦露台，相鄰 20F-A1 億萬複層戶',
+            priceStat: '20F-A1創全案最高總價 1.818 億'
+        },
+        {
+            floor: '22F',
+            units: 'A1-22F',
+            desc: '約定 A1-22F 戶管理使用。超高樓層獨立空中花園露台。',
+            feature: '超高樓層空中花園，陽明山無敵景觀',
+            priceStat: '成交單價高達 160.50 萬/坪'
+        },
+        {
+            floor: '23F',
+            units: 'A2-23F, A5-23F',
+            desc: '約定 A2-23F 及 A5-23F 戶管理使用。次頂樓極致雙露台配置。',
+            feature: '次頂樓雙露台配置，環景視野極致大宅',
+            priceStat: '成交單價突破 162.96 萬/坪'
+        },
+        {
+            floor: '24F',
+            units: 'A2-24F, A5-24F',
+            desc: '約定 A2-24F 及 A5-24F 戶管理使用。高空立體綠洲，24F-A5 附 11.36 坪露台。',
+            feature: 'MVRDV 旗艦懸臂大露台，全案頂級標桿',
+            priceStat: '24F-A5 以 166.09 萬/坪 創全案最高單價'
+        },
+        {
+            floor: '25F',
+            units: 'A1-25F, A2-25F',
+            desc: '約定 A1-25F 及 A2-25F 戶管理使用。頂樓專屬空中露台，絕版天際線。',
+            feature: '頂樓至尊專屬露台，俯瞰整個天母天際線',
+            priceStat: '頂樓尊榮指標戶，稀有珍藏'
         }
     ];
 
     let selectedTypeIndex = 0;
+    let selectedTerraceIndex = 8; // Default 24F
 
-    // Render Unit Selector Buttons
     function renderUnitSelectors() {
         const container = document.getElementById('unit-selector-container');
         container.innerHTML = apartmentTypes.map((item, index) => `
-            <button onclick="selectUnitType(${index})" class="w-full text-left p-3 rounded-xl border transition-all text-xs flex items-center justify-between ${index === selectedTypeIndex ? 'bg-accentbg border-accentgold font-bold text-primarydark' : 'bg-stonebg border-warmborder text-secondarydark hover:border-accentgold'}">
+            <button onclick="selectUnitType(${index})" class="w-full text-left p-3 rounded-xl border transition-all text-xs flex items-center justify-between ${index === selectedTypeIndex ? 'bg-amber-50 border-amber-400 font-bold text-primarydark shadow-sm' : 'bg-slatebg border-warmborder text-secondarydark hover:border-amber-300'}">
                 <span>${item.title}</span>
                 <span class="text-accentgold font-serif">${index === selectedTypeIndex ? '❖' : '→'}</span>
             </button>
         `).join('');
     }
 
-    // Select Unit Type
     function selectUnitType(index) {
         selectedTypeIndex = index;
         renderUnitSelectors();
         calculatePrice();
     }
 
-    // Dynamic Price Calculation
     function calculatePrice() {
         const item = apartmentTypes[selectedTypeIndex];
         const parkingCount = parseInt(document.getElementById('parking-count').value);
-        const parkingCost = parkingCount * 400; // Average 400萬 per parking spot
+        const parkingCost = parkingCount * 400;
 
         document.getElementById('display-code').innerText = item.code;
         document.getElementById('display-title').innerText = item.title;
@@ -632,14 +775,57 @@
         document.getElementById('display-ping').innerText = `${item.pingMin} ~ ${item.pingMax} 坪`;
         document.getElementById('display-unit-price').innerText = `${item.unitPriceMin} ~ ${item.unitPriceMax} 萬/坪`;
         document.getElementById('display-house-price').innerText = `${item.housePriceMin.toLocaleString()} ~ ${item.housePriceMax.toLocaleString()} 萬元`;
-        document.getElementById('display-desc').innerText = item.desc;
 
         const totalMin = item.housePriceMin + parkingCost;
         const totalMax = item.housePriceMax + parkingCost;
         document.getElementById('calc-total-range').innerText = `${totalMin.toLocaleString()} ～ ${totalMax.toLocaleString()} 萬元`;
+
+        // Loan calculations (20% down, 80% loan)
+        const downMin = Math.round(totalMin * 0.2);
+        const downMax = Math.round(totalMax * 0.2);
+        const loanMin = totalMin - downMin;
+        const loanMax = totalMax - downMax;
+        document.getElementById('calc-loan-breakdown').innerHTML = `
+            自備款 (20%): 約 <strong>${downMin.toLocaleString()} ~ ${downMax.toLocaleString()} 萬元</strong><br>
+            銀行貸款 (80%): 約 <strong>${loanMin.toLocaleString()} ~ ${loanMax.toLocaleString()} 萬元</strong>
+        `;
+
+        // Management fee calculation ($250/坪 + $1,200/car)
+        const houseFeeMin = Math.round(item.pingMin * 250);
+        const houseFeeMax = Math.round(item.pingMax * 250);
+        const parkFee = parkingCount * 1200;
+        const totalFeeMin = houseFeeMin + parkFee;
+        const totalFeeMax = houseFeeMax + parkFee;
+
+        document.getElementById('calc-mgmt-fee').innerHTML = `
+            房屋管理費: $${houseFeeMin.toLocaleString()} ~ $${houseFeeMax.toLocaleString()} /月 ($250/坪)<br>
+            車位管理費: $${parkFee.toLocaleString()} /月 (${parkingCount}車位, $1200/位)<br>
+            <strong class="text-primarydark">預估月總管理費: $${totalFeeMin.toLocaleString()} ~ $${totalFeeMax.toLocaleString()} /月</strong>
+        `;
     }
 
-    // Tab Switching Functionality
+    function renderTerraceSelectors() {
+        const container = document.getElementById('terrace-selector');
+        container.innerHTML = terraceFloors.map((item, index) => `
+            <button onclick="selectTerraceFloor(${index})" class="p-2.5 rounded-xl border text-xs text-center transition-all ${index === selectedTerraceIndex ? 'bg-primarydark text-white border-primarydark font-bold' : 'bg-slatebg border-warmborder text-secondarydark hover:border-amber-400'}">
+                <span class="block font-serif font-bold text-sm">${item.floor}</span>
+                <span class="text-[10px] opacity-80">${item.units}</span>
+            </button>
+        `).join('');
+    }
+
+    function selectTerraceFloor(index) {
+        selectedTerraceIndex = index;
+        renderTerraceSelectors();
+        const item = terraceFloors[index];
+        document.getElementById('terrace-floor-tag').innerText = `約定專用露台詳情 • ${item.floor}`;
+        document.getElementById('terrace-floor-title').innerText = `${item.floor} 樓層露台 (戶別: ${item.units})`;
+        document.getElementById('terrace-units-badge').innerText = `戶別: ${item.units}`;
+        document.getElementById('terrace-legal-desc').innerText = item.desc;
+        document.getElementById('terrace-feature').innerText = item.feature;
+        document.getElementById('terrace-price-stat').innerText = item.priceStat;
+    }
+
     function switchTab(tabId) {
         const tabs = ['tab-facility', 'tab-laundry', 'tab-interior'];
         tabs.forEach(id => {
@@ -655,30 +841,78 @@
         });
     }
 
-    // Initialize Chart.js Data
     window.addEventListener('DOMContentLoaded', () => {
         renderUnitSelectors();
         calculatePrice();
+        renderTerraceSelectors();
+        selectTerraceFloor(8); // Default 24F
 
-        // Chart 1: Absorption & Max Unit Price
+        // Chart 1: Legal Area Distribution (Donut Chart)
+        const ctxArea = document.getElementById('chartArea').getContext('2d');
+        new Chart(ctxArea, {
+            type: 'doughnut',
+            data: {
+                labels: ['專有部分 (室內/陽台)', '共有部分-大公', '共有部分-小公', '共有部分-車公'],
+                datasets: [{
+                    data: [13843.95, 6679.77, 1221.72, 4547.86],
+                    backgroundColor: ['#0F172A', '#D97706', '#0284C7', '#64748B'],
+                    borderWidth: 2,
+                    borderColor: '#FFFFFF'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { font: { size: 10 }, boxWidth: 12 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
+                            label: function(context) {
+                                const val = context.raw;
+                                const ping = (val / 3.30579).toFixed(1);
+                                return ' ' + context.label + ': ' + val.toLocaleString() + ' m² (' + ping + '坪)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Sales Absorption Speed & Cumulative Rate
         const ctxAbsorption = document.getElementById('chartAbsorption').getContext('2d');
         new Chart(ctxAbsorption, {
             type: 'bar',
             data: {
-                labels: ['50坪型 (A1/A3)', '70坪型 (A2/A5)', '77坪型 (A2/A5)', '110坪複層 (A1/A3)'],
+                labels: ['50坪型 (A1/A3)', '70坪型 (A2/A5)', '77坪型 (A2/A5)', ['110坪高空複層', '(A1/A3 樓中樓)']],
                 datasets: [
                     {
-                        label: '去化率 (%)',
-                        data: [32.25, 43.75, 21.87, 75.00],
-                        backgroundColor: '#A38A5C',
+                        label: '預售去化速度 (戶/月)',
+                        data: [2.50, 1.75, 1.75, 0.75],
+                        backgroundColor: '#D97706',
                         borderRadius: 6,
                         yAxisID: 'y'
                     },
                     {
-                        label: '最高成交單價 (萬/坪)',
-                        data: [158.49, 166.09, 162.96, 158.13],
-                        backgroundColor: '#22201D',
-                        borderRadius: 6,
+                        label: '累積去化率 (%)',
+                        data: [32.25, 43.75, 21.87, 75.00],
+                        type: 'line',
+                        borderColor: '#0F172A',
+                        backgroundColor: '#0F172A',
+                        pointStyle: 'circle',
+                        pointRadius: 5,
+                        borderWidth: 2,
                         yAxisID: 'y1'
                     }
                 ]
@@ -693,8 +927,20 @@
                     },
                     tooltip: {
                         callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
                             label: function(context) {
-                                return context.dataset.label + ': ' + context.raw + (context.datasetIndex === 0 ? '%' : ' 萬/坪');
+                                if (context.dataset.type === 'line') {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                                return context.dataset.label + ': ' + context.raw + ' 戶/月';
                             }
                         }
                     }
@@ -705,36 +951,37 @@
                         type: 'linear',
                         display: true,
                         position: 'left',
-                        title: { display: true, text: '去化率 (%)', font: { size: 10 } },
-                        max: 100
+                        title: { display: true, text: '去化速度 (戶/月)', font: { size: 10 } },
+                        min: 0,
+                        max: 3.5
                     },
                     y1: {
                         type: 'linear',
                         display: true,
                         position: 'right',
-                        title: { display: true, text: '萬/坪', font: { size: 10 } },
+                        title: { display: true, text: '累積去化率 (%)', font: { size: 10 } },
                         grid: { drawOnChartArea: false },
-                        min: 100,
-                        max: 180
+                        min: 0,
+                        max: 100
                     }
                 }
             }
         });
 
-        // Chart 2: Floor Elevation vs Price
+        // Chart 3: Elevation Floor Price Curve
         const ctxElevation = document.getElementById('chartElevation').getContext('2d');
         new Chart(ctxElevation, {
             type: 'line',
             data: {
-                labels: ['2F', '5F', '10F', '13F (露台)', '17F (複層)', '20F (複層)', '22F', '24F (最高露台)'],
+                labels: ['2F (低樓層定錨)', '5F (標準低樓)', '10F (標準中樓)', ['13F (懸臂露台戶)', '158.49萬/坪'], '17F (高空複層)', '20F (頂級複層)', '22F (高樓露台)', ['24F (創高價露台)', '166.09萬/坪']],
                 datasets: [{
                     label: '代表樓層成交單價 (萬/坪)',
                     data: [127.09, 130.20, 145.06, 158.49, 152.30, 158.13, 160.50, 166.09],
-                    borderColor: '#A38A5C',
-                    backgroundColor: 'rgba(163, 138, 92, 0.15)',
+                    borderColor: '#D97706',
+                    backgroundColor: 'rgba(217, 119, 6, 0.12)',
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: '#22201D',
+                    pointBackgroundColor: '#0F172A',
                     pointRadius: 5
                 }]
             },
@@ -745,6 +992,19 @@
                     legend: {
                         position: 'top',
                         labels: { font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
                     }
                 },
                 scales: {
